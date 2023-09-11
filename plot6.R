@@ -1,35 +1,18 @@
-source("downloadArchive.R")
-
-# Load the NEI & SCC data frames.
+# Loading required libraries
+library(plyr); library(grDevices)
+#Loading the main dataset
 NEI <- readRDS("summarySCC_PM25.rds")
-SCC <- readRDS("Source_Classification_Code.rds")
 
-# Gather the subset of the NEI data which corresponds to vehicles
-vehicles <- grepl("vehicle", SCC$SCC.Level.Two, ignore.case=TRUE)
-vehiclesSCC <- SCC[vehicles,]$SCC
-vehiclesNEI <- NEI[NEI$SCC %in% vehiclesSCC,]
+# Filtering vehicle based missions in Baltimore. SSC source data file shows that all vehicle related emissions are recorded as "ON-ROAD" type in the main data
+NEI_total_Balt_motors <- ddply(filter(NEI,fips=="24510", type =="ON-ROAD"), .(year), summarize, total=sum(Emissions))
 
-# Subset the vehicles NEI data by each city's fip and add city name.
-vehiclesBaltimoreNEI <- vehiclesNEI[vehiclesNEI$fips=="24510",]
-vehiclesBaltimoreNEI$city <- "Baltimore City"
+# Filtering vehicle based missions in LA in the same methodology above
+NEI_total_LA_motors <- ddply(filter(NEI,fips=="06037", type =="ON-ROAD"), .(year), summarize, total=sum(Emissions))
 
-vehiclesLANEI <- vehiclesNEI[vehiclesNEI$fips=="06037",]
-vehiclesLANEI$city <- "Los Angeles County"
-
-# Combine the two subsets with city name into one data frame
-bothNEI <- rbind(vehiclesBaltimoreNEI,vehiclesLANEI)
-
-png("plot6.png",width=480,height=480,units="px",bg="transparent")
-
-library(ggplot2)
- 
-ggp <- ggplot(bothNEI, aes(x=factor(year), y=Emissions, fill=city)) +
- geom_bar(aes(fill=year),stat="identity") +
- facet_grid(scales="free", space="free", .~city) +
- guides(fill=FALSE) + theme_bw() +
- labs(x="year", y=expression("Total PM"[2.5]*" Emission (Kilo-Tons)")) + 
- labs(title=expression("PM"[2.5]*" Motor Vehicle Source Emissions in Baltimore & LA, 1999-2008"))
- 
-print(ggp)
-
+# Plotting comparison line chart depicting the emission in both cities
+png(filename = "plot6.png", height = 600, width = 600)  
+plot(NEI_total_LA_motors, type="l", main=" Compairing Vehicle Emisions in LA and Baltimore ", ylab="PM25 Emission (tonnes)", col="red", ylim=c(0,5000))
+lines(NEI_total_Balt_motors, col="blue")
+legend("topleft", legend=c("Los Angeles", "Baltimore"),
+       col=c("red", "blue"), lty=1:1,)
 dev.off()
