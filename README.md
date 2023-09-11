@@ -85,8 +85,8 @@ ggp <- ggplot(SubNEI,aes(factor(year),Emissions,fill=type)) +
 print(ggp)
 
 dev.off()
-```
-[![plot3](https://github.com/kannbaba/Exploratory-Data-Analysis-Course-Project-2/assets/6490466/f1fd9d7f-a599-456e-9f28-5e95551c6d26)](https://github.com/5jiaxiang/exploratory-data-analysis-course-project-2/blob/main/plot3%20(1).png)
+```[
+[![plot3](https://github.com/kannbaba/Exploratory-Data-Analysis-Course-Project-2/assets/6490466/f1fd9d7f-a599-456e-9f28-5e95551c6d26)](https://github.com/5jiaxiang/exploratory-data-analysis-course-project-2/blob/main/plot3%20(1).png)](https://github.com/5jiaxiang/exploratory-data-analysis-course-project-2/blob/main/plot3%20(1).png)
 
 
 ****
